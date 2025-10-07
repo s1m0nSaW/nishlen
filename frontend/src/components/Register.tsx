@@ -7,7 +7,7 @@ import {
     Box,
     Alert,
 } from "@mui/material";
-import api from "../utils/auth";
+import { api } from "../utils/auth";
 
 const Register: React.FC = () => {
     const [phone, setPhone] = useState("");

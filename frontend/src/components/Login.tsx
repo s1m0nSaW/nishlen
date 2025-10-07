@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, TextField, Container, Typography, Box } from "@mui/material";
-import api from "../utils/auth";
+import { api } from "../utils/auth";
 
 const Login: React.FC = () => {
     const [phone, setPhone] = useState("");

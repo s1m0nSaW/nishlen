@@ -4,6 +4,8 @@ import { CssBaseline } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import BookingSearch from "./components/BookingSearch";
+import BookingForm from "./components/BookingForm";
 
 const theme = createTheme({
     palette: { primary: { main: "#FF6B6B" } }, // Розовый для beauty
@@ -37,6 +39,11 @@ function App() {
                             </div>
                         }
                     />
+                    <Route path="/search" element={<BookingSearch />} />
+                    <Route
+                        path="/book/:masterId"
+                        element={<BookingForm />}
+                    />{" "}
                 </Routes>
             </Router>
         </ThemeProvider>
