@@ -61,6 +61,20 @@ services:
             REDIS_URL: redis://redis:6379
         restart: unless-stopped
 
+    profile:
+        build: ./services/profile
+        ports:
+            - "3003:3003"
+        depends_on:
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_started
+        environment:
+            DATABASE_URL: postgresql://admin:secret@postgres:5432/nishlen_db
+            REDIS_URL: redis://redis:6379
+        restart: unless-stopped
+
 volumes:
     postgres_data:
     minio_data:

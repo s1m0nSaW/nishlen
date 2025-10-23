@@ -6,6 +6,10 @@ import {
     Typography,
     Box,
     Alert,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
 } from "@mui/material";
 import { api } from "../utils/auth";
 
@@ -16,6 +20,10 @@ const Register: React.FC = () => {
     const [fullName, setFullName] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
+    const [role, setRole] = useState("client");
+    const [photoUrl, setPhotoUrl] = useState("");
+    const [city, setCity] = useState("");
+    const [salonName, setSalonName] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,7 +41,9 @@ const Register: React.FC = () => {
                     phone,
                     password,
                     full_name: fullName,
-                    role: "client", // По умолчанию для клиентов
+                    role,
+                    ...(role === "master" && { photo_url: photoUrl, city }),
+                    ...(role === "salon_admin" && { salon_name: salonName }),
                 })
                 .then((res) => {
                     localStorage.setItem("token", res.data.token);
@@ -109,6 +119,48 @@ const Register: React.FC = () => {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                     />
+                    <FormControl fullWidth sx={{ mt: 2 }}>
+                        <InputLabel>Роль</InputLabel>
+                        <Select
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                            label="Роль"
+                        >
+                            <MenuItem value="client">Клиент</MenuItem>
+                            <MenuItem value="master">Мастер</MenuItem>
+                            <MenuItem value="salon_admin">
+                                Админ салона
+                            </MenuItem>
+                        </Select>
+                    </FormControl>
+                    {role === "master" && (
+                        <>
+                            <TextField
+                                fullWidth
+                                label="Фото URL"
+                                value={photoUrl}
+                                onChange={(e) => setPhotoUrl(e.target.value)}
+                                sx={{ mt: 1 }}
+                            />
+                            <TextField
+                                fullWidth
+                                label="Город"
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
+                                sx={{ mt: 1 }}
+                            />
+                        </>
+                    )}
+
+                    {role === "salon_admin" && (
+                        <TextField
+                            fullWidth
+                            label="Название салона"
+                            value={salonName}
+                            onChange={(e) => setSalonName(e.target.value)}
+                            sx={{ mt: 1 }}
+                        />
+                    )}
                     <Button
                         type="submit"
                         fullWidth

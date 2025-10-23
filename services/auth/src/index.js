@@ -50,14 +50,24 @@ passport.use(
 
 // Регистрация по phone
 app.post("/api/auth/register", async (req, res) => {
-    const { phone, password, full_name, role = "client" } = req.body;
+    const { phone, password, full_name, role, photo_url, city, salon_name } =
+        req.body; // Role-specific fields
     if (password.length < 6) {
-        return res
-            .status(400)
-            .json({ error: "Пароль слишком короткий (мин. 6 символов)" });
+        return res.status(400).json({ error: "Пароль слишком короткий" });
     }
     const hash = await bcrypt.hash(password, 10);
     try {
+        // Role validation
+        if (role === "master" && (!photo_url || !city)) {
+            return res
+                .status(400)
+                .json({ error: "Master requires photo and city" });
+        }
+        if (role === "salon_admin" && !salon_name) {
+            return res
+                .status(400)
+                .json({ error: "Salon admin requires salon name" });
+        }
         await pool.query(
             "INSERT INTO auth.users (phone, password_hash, full_name, role) VALUES ($1, $2, $3, $4)",
             [phone, hash, full_name, role]
