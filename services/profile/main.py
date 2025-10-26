@@ -157,6 +157,14 @@ def get_profile_by_slug(slug: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Profile not found")
     return profile
 
+# <-- ВАЖНО: /tops ДОЛЖЕН БЫТЬ ЗДЕСЬ, до /{user_id} -->
+@app.get("/api/profile/tops", response_model=List[TopOut])
+def get_tops(city: Optional[str] = None, db: Session = Depends(get_db)):  # Public, no auth
+    query = db.query(Top)
+    if city: # Фильтруем ТОЛЬКО если city не None и не пустая строка
+        query = query.filter(Top.city == city)
+    return query.all()
+
 @app.get("/api/profile/me", response_model=ProfileOut)  # Фикс: /me for current user, no path param
 def get_profile_me(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     profile = db.query(Profile).filter(Profile.user_id == current_user['user_id']).first()
@@ -241,13 +249,6 @@ def give_stars(star: StarGive, db: Session = Depends(get_db), current_user = Dep
     db.refresh(db_star)
     # Trigger total_stars_received
     return db_star
-
-@app.get("/api/profile/tops", response_model=List[TopOut])
-def get_tops(city: Optional[str] = None, db: Session = Depends(get_db)):  # Public, no auth
-    query = db.query(Top)
-    if city:
-        query = query.filter(Top.city == city)
-    return query.all()
 
 @app.post("/api/profile/visit-photos", response_model=VisitPhotoOut)
 def add_visit_photo(photo: UploadFile = File(...), comment: Optional[str] = None, visibility: str = "private", db: Session = Depends(get_db), current_user = Depends(get_current_user)):
